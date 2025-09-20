@@ -1,18 +1,23 @@
 // Initialize EmailJS with your Public Key
 (function() {
-    emailjs.init("9wfngz6TqxjBFnFfc"); // Replace with your actual EmailJS public key
+    emailjs.init("9wfngz6TqxjBFnFfc");
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
     // Calendar functionality
     let currentDate = new Date();
-    let selectedDate = null;
+    let selectedDate = localStorage.getItem('selectedDate') ? new Date(localStorage.getItem('selectedDate')) : null;
     
     const monthYearElement = document.getElementById('current-month-year');
     const calendarGrid = document.getElementById('calendar-grid');
     const prevMonthButton = document.getElementById('prev-month');
     const nextMonthButton = document.getElementById('next-month');
     const selectedDateInput = document.getElementById('selected-date');
+    
+    // Set the initial value if we have a stored date
+    if (selectedDate) {
+        selectedDateInput.value = selectedDate.toISOString().split('T')[0];
+    }
     
     // Initialize calendar
     renderCalendar(currentDate);
@@ -105,18 +110,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isDisabled || isPast) {
             cell.classList.add('disabled');
         } else {
-            cell.addEventListener('click', function(event) {
-                selectDate(day, event);
+            cell.addEventListener('click', function() {
+                selectDate(day, this);
             });
         }
         
         return cell;
     }
     
-    // Function to handle date selection - FIXED: Added event parameter
-    function selectDate(day, event) {
+    // Function to handle date selection - FIXED
+    function selectDate(day, cellElement) {
         selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         selectedDateInput.value = selectedDate.toISOString().split('T')[0];
+        
+        // Store the selected date in localStorage
+        localStorage.setItem('selectedDate', selectedDate.toISOString());
         
         // Update visual selection
         const cells = document.querySelectorAll('.calendar-cell');
@@ -124,13 +132,12 @@ document.addEventListener('DOMContentLoaded', function() {
             cell.classList.remove('selected');
         });
         
-        event.target.classList.add('selected');
+        cellElement.classList.add('selected');
         
-        // Debug log to verify selection is working
         console.log('Selected date:', selectedDate);
     }
     
-    // Form submission handling
+    // Form submission handling - FIXED
     const bookingForm = document.getElementById('booking-form');
     const modal = document.getElementById('confirmation-modal');
     const confirmEmail = document.getElementById('confirm-email');
@@ -141,14 +148,18 @@ document.addEventListener('DOMContentLoaded', function() {
     bookingForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Debug log to check selectedDate value
-        console.log('Form submitted. selectedDate value:', selectedDate);
-        console.log('selectedDateInput value:', selectedDateInput.value);
+        // Get the selected date from the hidden input field instead of the variable
+        const selectedDateValue = selectedDateInput.value;
         
-        if (!selectedDate) {
+        console.log('Form submitted. selectedDate input value:', selectedDateValue);
+        
+        if (!selectedDateValue) {
             alert('Please select a date for your cooking session');
             return;
         }
+        
+        // Parse the date from the input field
+        selectedDate = new Date(selectedDateValue);
         
         const email = document.getElementById('email').value;
         
@@ -168,6 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show modal
         modal.style.display = 'flex';
+        
+        // Clear the stored date after successful submission
+        localStorage.removeItem('selectedDate');
     });
     
     // EmailJS function to send email
@@ -193,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
         emailjs.send("service_uos6vhh", "template_u26dx3f", parms)
             .then(function(response) {
                 console.log('Email successfully sent!', response.status, response.text);
-                // The modal will already be shown from the form submission handler
             }, function(error) {
                 console.error('Failed to send email:', error);
                 alert('There was an error sending your confirmation email. Please contact us directly.');
