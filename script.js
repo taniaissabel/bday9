@@ -105,14 +105,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isDisabled || isPast) {
             cell.classList.add('disabled');
         } else {
-            cell.addEventListener('click', () => selectDate(day));
+            cell.addEventListener('click', function(event) {
+                selectDate(day, event);
+            });
         }
         
         return cell;
     }
     
-    // Function to handle date selection
-    function selectDate(day) {
+    // Function to handle date selection - FIXED: Added event parameter
+    function selectDate(day, event) {
         selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         selectedDateInput.value = selectedDate.toISOString().split('T')[0];
         
@@ -123,6 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         event.target.classList.add('selected');
+        
+        // Debug log to verify selection is working
+        console.log('Selected date:', selectedDate);
     }
     
     // Form submission handling
@@ -135,6 +140,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     bookingForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        // Debug log to check selectedDate value
+        console.log('Form submitted. selectedDate value:', selectedDate);
+        console.log('selectedDateInput value:', selectedDateInput.value);
         
         if (!selectedDate) {
             alert('Please select a date for your cooking session');
