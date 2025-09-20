@@ -229,6 +229,7 @@ header p {
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 0.9rem;
 }
 
 .calendar-cell.day-header {
@@ -342,30 +343,77 @@ footer {
     background: var(--primary);
 }
 
-/* Responsive Design */
+/* Responsive Design - UPDATED FOR MOBILE */
 @media (max-width: 768px) {
     .container {
-        padding: 20px;
+        padding: 15px;
     }
     
     header h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     
     .intro {
         flex-direction: column;
+        gap: 25px;
     }
     
     .image-placeholder {
-        width: 250px;
-        height: 250px;
+        width: 200px;
+        height: 200px;
     }
     
     .image-placeholder i {
-        font-size: 6rem;
+        font-size: 5rem;
+    }
+    
+    .calendar-container {
+        padding: 10px;
+    }
+    
+    .calendar-grid {
+        gap: 3px;
     }
     
     .calendar-cell {
-        padding: 5px;
+        padding: 5px 3px;
+        font-size: 0.85rem;
+    }
+    
+    .booking {
+        padding: 20px;
+    }
+    
+    .form-group label {
+        font-size: 1rem;
+    }
+    
+    button {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Additional mobile fix for very small screens */
+@media (max-width: 480px) {
+    .calendar-cell {
+        padding: 4px 2px;
+        font-size: 0.8rem;
+    }
+    
+    .calendar-header h3 {
+        font-size: 0.9rem;
+    }
+    
+    .calendar-header button {
+        padding: 4px 8px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .intro-text h2 {
+        font-size: 1.8rem;
     }
 }
